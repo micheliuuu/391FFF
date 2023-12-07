@@ -11,8 +11,6 @@ const openai = new OpenAI({
 
 const router = express.Router();
 
-
-
 const upload = multer({
   storage: multer.memoryStorage(), // This will store files in memory
   limits: { fileSize: 5 * 1024 * 1024 }, // Limit of 5MB
@@ -27,31 +25,19 @@ router.post("/", upload.single("image"), async (req, res) => {
     } else {
       return res.status(400).send("No image provided");
     }
-    // buffer = Buffer.from(buffer);
-    // buffer.name = "image.png";
     const file = await toFile(buffer);
-
     const result = await openai.images.edit({
       model: "dall-e-2",
-      image: file, 
-      prompt:"A boy wearing a " + currentColor + " baseball hat on the head.",
+      image: file,
+      prompt: "A boy wearing a " + currentColor + " baseball hat on the head.",
       n: 1,
-      size: "1024x1024"
+      size: "1024x1024",
     });
-    // console.log(res);
     return res.status(200).send(result.data[0].url);
-    // const result = await openai.images.createVariation({
-    //   model: "dall-e-2",
-    //   image: file,
-    //   n: 1,
-    //   size: "1024x1024",
-    // });
-    // return res.status(200).send(result.data[0].url);
   } catch (error) {
     console.log(error);
     return res.status(400).send("Something went wrong");
   }
 });
-
 
 export default router;
